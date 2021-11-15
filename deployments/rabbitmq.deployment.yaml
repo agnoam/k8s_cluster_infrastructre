@@ -1,0 +1,91 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+
+metadata:
+  name: "rabbitmq"
+
+spec:
+  selector:
+    # namespace: "infrastructure"
+    matchLabels:
+      app: "rabbitmq"
+
+  template:
+    metadata:
+      labels:
+        app: "rabbitmq"
+
+    spec:
+      volumes:
+        - name: "rabbitmq-storage"
+          persistentVolumeClaim:
+            claimName: "rabbitmq-volume-claim"
+
+      containers:
+        - name: "rabbitmq"
+          image: "rabbitmq:management"
+
+          ports:
+            - containerPort: 15672
+            - containerPort: 15671
+            - containerPort: 5672
+
+          # Example of 'ConfigMap/Secret' files env declaration
+          env:
+            - name: RABBITMQ_DEFAULT_USER # Env var name
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secrets # Name of secret
+                  key: default-user # Name of key in secret
+            
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secrets
+                  key: default-password
+
+            - name: RABBITMQ_ERLANG_COOKIE
+              valueFrom:
+                secretKeyRef:
+                  name: rabbitmq-secrets
+                  key: earlang-cookie
+
+            - name: RABBITMQ_DEFAULT_VHOST # Env var name
+              value: /
+
+          volumeMounts:
+            - mountPath: "/var/lib/rabbitmq/mnesia"
+              name: "rabbitmq-storage"
+
+---
+
+apiVersion: "v1"
+kind: "Service"
+
+metadata:
+  name: "rabbitmq-service"
+
+spec:
+  selector:
+    app: "rabbitmq"
+  
+  ports:
+    - protocol: "TCP"
+      name: "management-dashboard"
+      port: 15672
+      targetPort: 15672
+      nodePort: 30000
+
+    - protocol: "TCP"
+      name: "inter-node"
+      port: 15671
+      targetPort: 15672
+      nodePort: 30001
+
+    - protocol: "TCP"
+      name: "inter-node-2"
+      port: 5672
+      targetPort: 5672
+      nodePort: 30002
+      
+  type: "NodePort"

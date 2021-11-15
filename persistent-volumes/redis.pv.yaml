@@ -1,0 +1,29 @@
+apiVersion: "v1"
+kind: "PersistentVolume"
+metadata:
+  name: "nfs-redis-data"
+spec:
+  storageClassName: "redis-nfs"
+  mountOptions:
+    - "nfsvers=3"
+  capacity:
+    storage: "100Gi"
+  accessModes:
+    - "ReadWriteMany"
+  nfs:
+    server: "k8s-cluster-i7" # Hostname or IP
+    path: "/mnt/shared_nfs_storage/redis" # Make sure this path exists first (in server)
+
+---
+
+apiVersion: "v1"
+kind: "PersistentVolumeClaim"
+metadata:
+  name: "redis-volume-claim"
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  storageClassName: "redis-nfs"
+  resources:
+    requests:
+      storage: "100Gi"

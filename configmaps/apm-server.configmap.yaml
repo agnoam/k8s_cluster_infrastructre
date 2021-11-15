@@ -1,0 +1,28 @@
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "apm-server-config"
+  # namespace: "infrastructure"
+data:
+  file-content: |
+    apm-server:
+      host: 0.0.0.0:8200
+      
+      rum:
+        enabled: true
+        allow_origins: ['*']
+      
+    kibana:
+      enabled: true
+      host:  10.0.0.62:5601
+    
+    # setup.template.name: "globus-apm-%{[observer.version]}"
+    # setup.template.pattern: "globus-apm-%{[observer.version]}-*"
+
+    setup.template.settings:
+      index:
+        number_of_replicas: 0
+        
+    output.elasticsearch:
+      # index: globus-apm-%{+yyyy.MM.dd}
+      hosts: ["10.0.0.62:9200"]

@@ -1,0 +1,59 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+
+metadata:
+  name: "kibana"
+
+spec:
+  selector:
+    matchLabels:
+      app: "kibana"
+
+  # Pod defenition
+  template:
+    metadata:
+      # namespace: "infrastructure"
+      labels:
+        app: "kibana"
+
+    spec:
+      containers:
+        - name: "kibana"
+          image: "docker.elastic.co/kibana/kibana:7.13.2"
+            
+          ports:
+            - containerPort: 5601
+
+          env:
+            - name: "ELASTICSEARCH_HOSTS" # Env var name
+              valueFrom:
+                configMapKeyRef:
+                  name: "kibana-configmap" # Name of ConfigMap
+                  key: "elasticsearch-hosts" # Name of key in ConfigMap 
+
+            - name: "XPACK_SECURITY_ENABLED"
+              valueFrom:
+                configMapKeyRef:
+                  name: "kibana-configmap"
+                  key: "security-enabled"
+
+---
+
+# External service of redis deployment
+apiVersion: "v1"
+kind: "Service"
+
+metadata:
+  name: "kibana-service"
+
+spec:
+  selector:
+    app: "kibana"
+  
+  ports:
+    - protocol: "TCP"
+      port: 5601
+      targetPort: 5601
+      nodePort: 30000
+
+  type: "NodePort"

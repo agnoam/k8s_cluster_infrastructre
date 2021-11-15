@@ -1,0 +1,73 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+
+metadata:
+  name: "elasticsearch"
+
+spec:
+  selector:
+    matchLabels:
+      app: "elasticsearch"
+
+  template:
+    metadata:
+      # namespace: "infrastructure"
+      labels:
+        app: "elasticsearch"
+
+    spec:
+      volumes:
+        - name: "elasticsearch-storage"
+          persistentVolumeClaim:
+            claimName: "elasticsearch-volume-claim"
+      
+      securityContext:
+        fsGroup: 1000
+
+      containers:
+        - name: "elasticsearch"
+          image: "localhost:32000/elasticsearch:7.13.2"
+          
+          securityContext:
+            privileged: true
+
+          env:
+            - name: "xpack.security.enabled"
+              value: 'false'
+            - name: "discovery.type"
+              value: "single-node"
+
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+
+          volumeMounts:
+            - mountPath: "/usr/share/elasticsearch/data"
+              name: "elasticsearch-storage"
+
+---
+
+apiVersion: "v1"
+kind: "Service"
+
+metadata:
+  name: "elasticsearch-service"
+
+spec:
+  selector:
+    app: "elasticsearch"
+  
+  ports:
+    - protocol: "TCP"
+      name: "rest"
+      port: 9200
+      targetPort: 9200
+      nodePort: 30000
+
+    - protocol: "TCP"
+      name: "inter-node"
+      port: 9300
+      targetPort: 9300
+      nodePort: 30001
+
+  type: "NodePort"

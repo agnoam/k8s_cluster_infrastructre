@@ -1,0 +1,56 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+
+metadata:
+  name: "apm-server"
+
+spec:
+  selector:
+    matchLabels:
+      app: "apm-server"
+
+  template:
+    metadata:
+      # namespace: "infrastructure"
+      labels:
+        app: "apm-server"
+
+    spec:
+      volumes:
+        - name: "apm-server-config-file"
+          configMap:
+            name: "apm-server-config" # Name of wanted ConfigMap
+            
+      containers:
+        - name: "apm-server"
+          image: "docker.elastic.co/apm/apm-server:7.13.2"
+          
+          ports:
+            - containerPort: 8200
+
+          volumeMounts:
+            - name: "apm-server-config-file" # Name of volume
+              subPath: "file-content" # Key name
+              mountPath: "/usr/share/apm-server/apm-server.yml" # In-pod path
+              
+---
+
+apiVersion: "v1"
+kind: "Service"
+
+metadata:
+  name: "apm-server-service"
+
+spec:
+  selector:
+    app: "apm-server"
+  
+  ports:
+    - protocol: "TCP"
+      name: "access-port"
+      port: 8200
+      targetPort: 8200
+      nodePort: 30000
+
+
+  type: "NodePort"

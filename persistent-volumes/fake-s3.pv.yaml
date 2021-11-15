@@ -1,0 +1,29 @@
+apiVersion: "v1"
+kind: "PersistentVolume"
+metadata:
+  name: "nfs-fake-s3-data"
+spec:
+  storageClassName: "fake-s3-nfs"
+  mountOptions:
+    - "nfsvers=3"
+  capacity:
+    storage: "100Gi"
+  accessModes:
+    - "ReadWriteMany"
+  nfs:
+    server: "k8s-cluster-i7" # Hostname or IP
+    path: "/mnt/shared_nfs_storage/fake-s3" # Make sure this path exists first (in server)
+
+---
+
+apiVersion: "v1"
+kind: "PersistentVolumeClaim"
+metadata:
+  name: "fake-s3-volume-claim"
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  storageClassName: "fake-s3-nfs"
+  resources:
+    requests:
+      storage: "100Gi"

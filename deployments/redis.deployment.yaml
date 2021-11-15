@@ -1,0 +1,54 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+
+metadata:
+  name: "redis"
+
+spec:
+  selector:
+    matchLabels:
+      app: "redis"
+
+  template:
+    metadata:
+      # namespace: "infrastructure"
+      labels:
+        app: "redis"
+
+    spec:
+      volumes:
+        - name: "redis-storage"
+          persistentVolumeClaim:
+            claimName: "redis-volume-claim"
+
+      containers:
+        - name: "redis"
+          image: "redis"
+
+          ports:
+            - containerPort: 6379
+
+          volumeMounts:
+            - mountPath: "/data"
+              name: "redis-storage"
+
+---
+
+apiVersion: "v1"
+kind: "Service"
+
+metadata:
+  name: "redis-service"
+
+spec:
+  selector:
+    app: "redis"
+  
+  ports:
+    - protocol: "TCP"
+      name: "access-port"
+      port: 6379
+      targetPort: 6379
+      nodePort: 30000
+      
+  type: "NodePort"

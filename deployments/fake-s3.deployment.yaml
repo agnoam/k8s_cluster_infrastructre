@@ -1,0 +1,55 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+
+metadata:
+  name: "fake-s3"
+
+spec:
+  selector:
+    matchLabels:
+      app: "fake-s3"
+
+  template:
+    metadata:
+      # namespace: "infrastructure"
+      labels:
+        app: "fake-s3"
+
+    spec:
+      volumes:
+        - name: "fake-s3-storage"
+          persistentVolumeClaim:
+            claimName: "fake-s3-volume-claim"
+            
+      containers:
+        - name: "fake-s3"
+          image: "lphoward/fake-s3"
+          
+          ports:
+            - containerPort: 4569
+
+          volumeMounts:
+            - mountPath: "/fakes3_root"
+              name: "fake-s3-storage"
+
+---
+
+apiVersion: "v1"
+kind: "Service"
+
+metadata:
+  name: "fake-s3-service"
+
+spec:
+  selector:
+    app: "fake-s3"
+  
+  ports:
+    - protocol: "TCP"
+      name: "access-port"
+      port: 4569
+      targetPort: 4569
+      nodePort: 30000
+
+
+  type: "NodePort"
