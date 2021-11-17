@@ -27,5 +27,16 @@ First of all install [MicroK8s](https://microk8s.io/docs) on all of the computer
 
 More info in [install nfs server on ubuntu](https://www.tecmint.com/install-nfs-server-on-ubuntu/)
 
+# Before Starting to work
+Add dashboard with the command: `microk8s enable dashboard`
+
+Before applying new deployment, don't forget to enable cluster-dns by `microk8s enable dns`
+It's very recomended to set `alias` of `microk8s kubectl` with just `kubectl` to save time. You can do this with `alias kubectl="microk8s kubectl"`
+
 Run on one of the computers the command `microk8s dashboard-proxy` and follow the instructions
 Check the k8s dashboard
+
+
+# FAQ
+## microk8s does not start after reboot
+Try to connect the computer to an internet connection and try again
