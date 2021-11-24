@@ -37,7 +37,10 @@ This repository contains:
 More info in [install nfs server on ubuntu](https://www.tecmint.com/install-nfs-server-on-ubuntu/)
 
 # Before Starting to work
+## All of these are optional
 Add dashboard with the command: `microk8s enable dashboard`
+Add RBAC (role cluster management) with: `microk8s enable rbac`
+Add dns (dns cluster management) with: `microk8s enable dns`
 
 Before applying new deployment, don't forget to enable cluster-dns by `microk8s enable dns`
 It's very recomended to set `alias` of `microk8s kubectl` with just `kubectl` to save time. You can do this with `alias kubectl="microk8s kubectl"`
