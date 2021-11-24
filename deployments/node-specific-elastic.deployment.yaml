@@ -1,36 +1,45 @@
-# In case "NFS attached" elasticsearch deployment not working, 
-# you can use `node-specific-elastic.deployment.yaml` instead.
-# It will use specific node with hostPath storage as persistent storage
+# Before deploying it be your wanted node labeled with 
+# `elasticsearch_data_node: true` or any other label.
+# In case you are changing the label, don't forget to change `nodeSelector:` too
 
 apiVersion: "apps/v1"
 kind: "Deployment"
 
 metadata:
-  name: "elasticsearch"
+  name: "elasticsearch-node-specific"
 
 spec:
   selector:
     matchLabels:
-      app: "elasticsearch"
+      app: "elasticsearch-node-specific"
 
   template:
     metadata:
       # namespace: "infrastructure"
       labels:
-        app: "elasticsearch"
+        app: "elasticsearch-node-specific"
 
     spec:
+      # In case we want to specify specific node to run our deployments on
+      # N.B - All the body of nodeSelector is the label
+      # Like:
+      # nodeSelector:
+      #   <your-label>
+      nodeSelector:
+        elasticsearch_data_node: "true" # <node-label>
+
       volumes:
-        - name: "elasticsearch-storage"
+        - name: "elasticsearch-local-storage"
           persistentVolumeClaim:
-            claimName: "elasticsearch-volume-claim"
+            claimName: "elasticsearch-hostpath-claim"
       
       securityContext:
         fsGroup: 1000
+        runAsUser: 1000
 
       containers:
-        - name: "elasticsearch"
-          image: "localhost:32000/elasticsearch:7.13.2"
+        - name: "elasticsearch-node-specific"
+          image: "elasticsearch:7.13.2"
           
           securityContext:
             privileged: true
@@ -47,7 +56,7 @@ spec:
 
           volumeMounts:
             - mountPath: "/usr/share/elasticsearch/data"
-              name: "elasticsearch-storage"
+              name: "elasticsearch-local-storage"
 
 ---
 
@@ -59,7 +68,7 @@ metadata:
 
 spec:
   selector:
-    app: "elasticsearch"
+    app: "elasticsearch-node-specific"
   
   ports:
     - protocol: "TCP"
