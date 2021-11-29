@@ -36,6 +36,10 @@ spec:
           persistentVolumeClaim:
             claimName: "private-registry-data-volume-claim"
 
+        - name: "registry-config"
+          configMap:
+            name: "private-registry-config"
+
       containers:
         - name: "private-repository"
           image: "registry:2"
@@ -56,6 +60,10 @@ spec:
               
             - name: "registry-vol"
               mountPath: "/var/lib/registry"
+
+            - name: "registry-config"
+              subPath: "file-content" # Key name of configmap
+              mountPath: "/etc/docker/registry/config.yml"
 ---
 
 apiVersion: "v1"

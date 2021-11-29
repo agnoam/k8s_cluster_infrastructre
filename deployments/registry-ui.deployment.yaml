@@ -1,0 +1,55 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+
+metadata:
+  name: "registry-ui"
+
+spec:
+  selector:
+    matchLabels:
+      app: "registry-ui"
+
+  template:
+    metadata:
+      namespace: "private-registry"
+      labels:
+        app: "registry-ui"
+
+    spec:
+      # volumes:
+      #   - name: "registry-ui-config-file"
+      #     configMap:
+      #       name: "registry-ui-config" # Name of wanted ConfigMap
+            
+      containers:
+        - name: "registry-ui"
+          image: "joxit/docker-registry-ui"
+          
+          ports:
+            - containerPort: 80
+
+          # volumeMounts:
+          #   - name: "registry-ui-config-file" # Name of volume
+          #     subPath: "file-content" # Key name
+          #     mountPath: "/usr/share/apm-server/apm-server.yml" # In-pod path
+              
+---
+
+apiVersion: "v1"
+kind: "Service"
+
+metadata:
+  name: "registry-ui"
+
+spec:
+  selector:
+    app: "registry-ui"
+  
+  ports:
+    - protocol: "TCP"
+      name: "access-port"
+      port: 80
+      targetPort: 80
+      nodePort: 31321
+
+  type: "NodePort"
