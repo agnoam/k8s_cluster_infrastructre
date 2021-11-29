@@ -54,5 +54,10 @@ And then deploy all `ConfigMaps` and `Secrets`.
 And then all your `Deployments`
 
 # FAQ
-## microk8s does not start after reboot
+## Why does microk8s not start after reboot
 Try to connect the computer to an internet connection and try again
+
+## Permission errors on NFS
+Don't forget to make the wanted folders before you deploy. <br/>
+If the folder exists make sure you changed the ownership to - `nobody: nogroup`, <br/>
+and the folder permissions to - `777`

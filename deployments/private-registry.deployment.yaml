@@ -1,0 +1,79 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+
+metadata:
+  name: "private-repository"
+  labels:
+    app: "private-repository"
+
+spec:
+  # replicas: 1
+  selector:
+    matchLabels:
+      app: "private-repository"
+
+  template:
+    metadata:
+      namespace: "private-repository"
+      labels:
+        app: "private-repository"
+
+    spec:
+      # In case we want to specify specific node to run our deployments on
+      # N.B - All the body of nodeSelector is the label
+      # Like:
+      # nodeSelector:
+      #   <your-label>
+      nodeSelector:
+        registry_node: "true" # <node-label>
+
+      volumes:
+        - name: "certs-vol"
+          persistentVolumeClaim:
+            claimName: "private-registry-certs-claim"
+
+        - name: "registry-vol"
+          persistentVolumeClaim:
+            claimName: "private-registry-data-volume-claim"
+
+      containers:
+        - name: "private-repository"
+          image: "registry:2"
+          # imagePullPolicy: IfNotPresent
+
+          # env:
+          #   - name: "REGISTRY_HTTP_TLS_CERTIFICATE"
+          #     value: "/certs/registry.crt"
+          #   - name: "REGISTRY_HTTP_TLS_KEY"
+          #     value: "/certs/registry.key"
+
+          ports:
+            - containerPort: 5000
+
+          volumeMounts:
+            - name: "certs-vol"
+              mountPath: "/certs"
+              
+            - name: "registry-vol"
+              mountPath: "/var/lib/registry"
+---
+
+apiVersion: "v1"
+kind: "Service"
+
+metadata:
+  labels:
+    app: "private-repository"
+  name: "private-repository"
+
+spec:
+  selector:
+    app: "private-repository"
+
+  ports:
+    - protocol: "TCP"
+      port: 5000
+      targetPort: 5000
+      nodePort: 31320
+
+  type: "NodePort"

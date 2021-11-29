@@ -4,7 +4,7 @@ metadata:
   name: "apm-server-config"
   # namespace: "infrastructure"
 data:
-  file-content: |
+  file-content: | # File content under this pipe
     apm-server:
       host: 0.0.0.0:8200
       

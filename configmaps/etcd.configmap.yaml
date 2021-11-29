@@ -1,0 +1,14 @@
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "etcd-config"
+  # namespace: "infrastructure"
+data:
+  allow-none-authentication: yes
+  etcd-enable-v2: true
+  etcd-name: feature_toggle_etcd
+  etcd-listen-client-urls: http://0.0.0.0:2379
+  etcd-listen-peer-urls: http://0.0.0.0:2380
+  etcd-advertise-client-urls: http://0.0.0.0:2380
+  etcd-initial-cluster: default=http://0.0.0.0:2380
+  etcd-initial-advertise-peer-urls: http://0.0.0.0:2380

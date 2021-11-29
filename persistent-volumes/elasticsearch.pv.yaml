@@ -7,7 +7,7 @@ spec:
   mountOptions:
     - "nfsvers=3"
   capacity:
-    storage: "300Gi"
+    storage: "100Gi"
   accessModes:
     - "ReadWriteMany"
   nfs:
@@ -26,7 +26,7 @@ spec:
   storageClassName: "elasticsearch-nfs"
   resources:
     requests:
-      storage: "300Gi"
+      storage: "100Gi"
 
 # ---
 

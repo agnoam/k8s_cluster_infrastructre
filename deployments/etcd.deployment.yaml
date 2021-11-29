@@ -1,0 +1,116 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+
+metadata:
+  name: "etcd"
+
+spec:
+  selector:
+    matchLabels:
+      app: "etcd"
+
+  template:
+    metadata:
+      # namespace: "infrastructure"
+      labels:
+        app: "etcd"
+
+    spec:
+      volumes:
+        - name: "etcd-storage"
+          persistentVolumeClaim:
+            claimName: "etcd-volume-claim"
+      
+      # securityContext:
+      #   fsGroup: 1000
+
+      containers:
+        - name: "etcd"
+          image: "bitnami/etcd"
+          
+          # securityContext:
+          #   privileged: true
+
+          env:
+            - name: ALLOW_NONE_AUTHENTICATION
+              valueFrom:
+                configMapKeyRef:
+                  name: etcd-config
+                  key: allow-none-authentication
+                  
+            - name: ETCD_ENABLE_V2
+              valueFrom:
+                configMapKeyRef:
+                  name: etcd-config
+                  key: etcd-enable-v2
+                  
+            # - name: ETCD_NAME
+            #   valueFrom:
+            #     configMapKeyRef:
+            #       name: etcd-config
+            #       key: etcd-name
+                  
+            - name: ETCD_LISTEN_CLIENT_URLS
+              valueFrom:
+                configMapKeyRef:
+                  name: etcd-config
+                  key: etcd-listen-client-urls
+                  
+            - name: ETCD_LISTEN_PEER_URLS
+              valueFrom:
+                configMapKeyRef:
+                  name: etcd-config
+                  key: etcd-listen-peer-urls
+                  
+            - name: ETCD_ADVERTISE_CLIENT_URLS
+              valueFrom:
+                configMapKeyRef:
+                  name: etcd-config
+                  key: etcd-advertise-client-urls
+                        
+            - name: ETCD_INITIAL_CLUSTER
+              valueFrom:
+                configMapKeyRef:
+                  name: etcd-config
+                  key: etcd-initial-cluster
+                        
+            - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+              valueFrom:
+                configMapKeyRef:
+                  name: etcd-config
+                  key: etcd-initial-advertise-peer-urls
+
+          ports:
+            - containerPort: 2379
+            - containerPort: 2380
+
+          volumeMounts:
+            - mountPath: "/bitnami/etcd"
+              name: "etcd-storage"
+
+---
+
+apiVersion: "v1"
+kind: "Service"
+
+metadata:
+  name: "etcd"
+
+spec:
+  selector:
+    app: "etcd"
+  
+  ports:
+    - protocol: "TCP"
+      name: "rest"
+      port: 2379
+      targetPort: 2379
+      nodePort: 30008
+
+    - protocol: "TCP"
+      name: "rest-2"
+      port: 2380
+      targetPort: 2380
+      nodePort: 30009
+
+  type: "NodePort"

@@ -38,7 +38,7 @@ apiVersion: "v1"
 kind: "Service"
 
 metadata:
-  name: "fake-s3-service"
+  name: "fake-s3"
 
 spec:
   selector:
@@ -49,7 +49,7 @@ spec:
       name: "access-port"
       port: 4569
       targetPort: 4569
-      nodePort: 30000
+      nodePort: 30004
 
 
   type: "NodePort"

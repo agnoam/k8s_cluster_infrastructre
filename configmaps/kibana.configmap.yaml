@@ -2,6 +2,7 @@ apiVersion: "v1"
 kind: "ConfigMap"
 
 metadata:
+  namespace: "infrastructure"
   name: "kibana-configmap"
 
 data:
