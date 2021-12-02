@@ -16,23 +16,26 @@ spec:
         app: "registry-ui"
 
     spec:
-      # volumes:
-      #   - name: "registry-ui-config-file"
-      #     configMap:
-      #       name: "registry-ui-config" # Name of wanted ConfigMap
-            
       containers:
         - name: "registry-ui"
           image: "joxit/docker-registry-ui"
           
+          env:
+            - name: "DELETE_IMAGES" # Env var name
+              valueFrom:
+                configMapKeyRef:
+                  name: "registry-ui-configmap" # Name of ConfigMap
+                  key: "delete-images" # Name of key in ConfigMap 
+
+            - name: "SHOW_CONTENT_DIGEST" # Env var name
+              valueFrom:
+                configMapKeyRef:
+                  name: "registry-ui-configmap" # Name of ConfigMap
+                  key: "show-content-digest" # Name of key in ConfigMap 
+
           ports:
             - containerPort: 80
 
-          # volumeMounts:
-          #   - name: "registry-ui-config-file" # Name of volume
-          #     subPath: "file-content" # Key name
-          #     mountPath: "/usr/share/apm-server/apm-server.yml" # In-pod path
-              
 ---
 
 apiVersion: "v1"

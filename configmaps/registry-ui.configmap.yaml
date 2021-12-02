@@ -1,0 +1,10 @@
+apiVersion: "v1"
+kind: "ConfigMap"
+
+metadata:
+  namespace: "private-registry"
+  name: "registry-ui-configmap"
+
+data:
+  delete-images: "true"
+  show-content-digest: "true"

@@ -14,7 +14,7 @@ data:
       
     kibana:
       enabled: true
-      host:  10.0.0.62:5601
+      host: kibana:5601
     
     # setup.template.name: "globus-apm-%{[observer.version]}"
     # setup.template.pattern: "globus-apm-%{[observer.version]}-*"
@@ -25,4 +25,4 @@ data:
         
     output.elasticsearch:
       # index: globus-apm-%{+yyyy.MM.dd}
-      hosts: ["10.0.0.62:9200"]
+      hosts: ["elasticsearch:9200"]
