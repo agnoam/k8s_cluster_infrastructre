@@ -2,21 +2,21 @@ apiVersion: "apps/v1"
 kind: "Deployment"
 
 metadata:
-  name: "private-repository"
+  name: "private-registry"
   labels:
-    app: "private-repository"
+    app: "private-registry"
 
 spec:
   # replicas: 1
   selector:
     matchLabels:
-      app: "private-repository"
+      app: "private-registry"
 
   template:
     metadata:
-      namespace: "private-repository"
+      namespace: "private-registry"
       labels:
-        app: "private-repository"
+        app: "private-registry"
 
     spec:
       # In case we want to specify specific node to run our deployments on
@@ -41,7 +41,7 @@ spec:
             name: "private-registry-config"
 
       containers:
-        - name: "private-repository"
+        - name: "private-registry"
           image: "registry:2"
           # imagePullPolicy: IfNotPresent
 
@@ -64,6 +64,7 @@ spec:
             - name: "registry-config"
               subPath: "file-content" # Key name of configmap
               mountPath: "/etc/docker/registry/config.yml"
+   
 ---
 
 apiVersion: "v1"
@@ -71,12 +72,12 @@ kind: "Service"
 
 metadata:
   labels:
-    app: "private-repository"
-  name: "private-repository"
+    app: "private-registry"
+  name: "private-registry"
 
 spec:
   selector:
-    app: "private-repository"
+    app: "private-registry"
 
   ports:
     - protocol: "TCP"

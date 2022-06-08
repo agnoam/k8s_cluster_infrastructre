@@ -1,42 +1,50 @@
-# apiVersion: "networking.k8s.io/v1"
-# kind: "Ingress"
-
-# metadata:
-#   name: "minimal-ingress"
-#   annotations:
-#     nginx.ingress.kubernetes.io/rewrite-target: "/"
-#     nginx.ingress.kubernetes.io/add-base-url: "true"
-
-# spec:
-#   rules:
-#     - http:
-#         paths:
-#           - path: "/"
-#             pathType: "Prefix"
-#             backend:
-#               service:
-#                 name: "demo-app"
-#                 port:
-#                   number: 80
-
-
 apiVersion: "networking.k8s.io/v1"
 kind: "Ingress"
 
 metadata:
-  name: "minimal-ingress"
+  name: "demo-ingress"
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: "/"
+    nginx.ingress.kubernetes.io/rewrite-target: "/$2"
     nginx.ingress.kubernetes.io/add-base-url: "true"
+
+    # For sticky socket
+    # nginx.ingress.kubernetes.io/affinity: "cookie"
+    # nginx.ingress.kubernetes.io/session-cookie-name: "route"
+    # nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    # nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+    # nginx.ingress.kubernetes.io/websocket-services: "queue-consumer"
 
 spec:
   rules:
+    # File verifier
     - http:
         paths:
-          - path: "/app"
+          - path: "/files(/|$)(.*)"
             pathType: "Prefix"
             backend:
               service:
-                name: "demo-app"
+                name: "file-validator"
                 port:
-                  number: 80
+                  number: 8810
+
+    # GIS backend
+    - http:
+        paths:
+          - path: "/gis(/|$)(.*)"
+            pathType: "Prefix"
+            backend:
+              service:
+                name: "gis-backend"
+                port:
+                  number: 8810
+                
+    # Queue consumer
+    # - http:
+    #     paths: 
+    #       - path: "/consumer(/|$)(.*)" # "/consumer(/|$)(.*)"
+    #         pathType: "Prefix"
+    #         backend:
+    #           service: 
+    #             name: "queue-consumer"
+    #             port:
+    #               number: 7100
