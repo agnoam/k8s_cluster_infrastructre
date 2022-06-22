@@ -36,9 +36,9 @@ spec:
           persistentVolumeClaim:
             claimName: "private-registry-data-volume-claim"
 
-        # - name: "registry-config"
-        #   configMap:
-        #     name: "private-registry-config"
+        - name: "registry-config"
+          configMap:
+            name: "private-registry-config"
 
       containers:
         - name: "private-registry"
@@ -47,9 +47,11 @@ spec:
 
           env:
             - name: "REGISTRY_HTTP_TLS_CERTIFICATE"
-              value: "/certs/registry.crt"
+              value: "/certs/domain.crt"
             - name: "REGISTRY_HTTP_TLS_KEY"
-              value: "/certs/registry.key"
+              value: "/certs/domain.key"
+            - name: "REGISTRY_STORAGE_DELETE_ENABLED"
+              value: "true"
 
           ports:
             - containerPort: 5000
@@ -61,9 +63,9 @@ spec:
             - name: "registry-vol"
               mountPath: "/var/lib/registry"
 
-            # - name: "registry-config"
-            #   subPath: "file-content" # Key name of configmap
-            #   mountPath: "/etc/docker/registry/config.yml"
+            - name: "registry-config"
+              subPath: "file-content" # Key name of configmap
+              mountPath: "/etc/docker/registry/config.yml"
    
 ---
 
