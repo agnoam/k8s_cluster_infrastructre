@@ -8,6 +8,7 @@ This repository contains:
 * Fake-s3 (s3 mock server)
 * RabbitMQ
 * Redis
+* Private Registry (docker-registry)
 
 # Master
 1. Type `microk8s add-node`
@@ -54,10 +55,32 @@ And then deploy all `ConfigMaps` and `Secrets`.
 And then all your `Deployments`
 
 # FAQ
-## Why does microk8s not start after reboot
+## Why does microk8s not start after reboot?
 Try to connect the computer to an internet connection and try again
 
 ## Permission errors on NFS
 Don't forget to make the wanted folders before you deploy. <br/>
 If the folder exists make sure you changed the ownership to - `nobody: nogroup`, <br/>
 and the folder permissions to - `777`
+
+## Self-Singed certified regsitry errors
+Create a ssl certificate, it will create two files: `.crt` file and `.key`. You can use [Docker docs](https://docs.docker.com/registry/insecure/#use-self-signed-certificates)
+
+1. Place them both in the volume of the Pod `/certs/domain.crt` and `/certs/domain.key`
+2. Add the path of them to the environment variables of the Pod
+
+### In each node of the cluster, Do like the following:
+### Setup the docker daemon
+1. Create a directory in this path `/etc/docker/certs.d/<host-name | ip-address>:<exposed-port>`
+2. Place the certificate created above inside it with the name - `ca.crt`
+3. Don't forget to restart the docker service
+4. Check the docker enable to or push from this registry
+
+#### Make Microk8s to support it (v1.23)
+1. Place the `.crt` in `/usr/local/share/ca-certificates`
+2. Run `sudo update-ca-certificates`
+3. And check whether the certificate added successfully to `/etc/ssl/certs/ca-certificates.crt` file
+4. Create a directory in this path `/var/snap/microk8s/current/args/certs.d/<host-name | ip-address>:<exposed-port>`
+5. Create inside it a file named `hosts.toml`, you can find the content [here](https://microk8s.io/docs/registry-private) (or in the `/var/snap/microk8s/current/args/certs.d/localhost:32000` in case it exists)
+
+Eventually, don't forget to restart the node
