@@ -1,0 +1,30 @@
+apiVersion: "v1"
+kind: "PersistentVolume"
+metadata:
+  name: "nfs-minio-data"
+spec:
+  storageClassName: "minio-nfs"
+  mountOptions:
+    - "nfsvers=3"
+  capacity:
+    storage: "100Gi"
+  accessModes:
+    - "ReadWriteMany"
+  nfs:
+    server: "k8s-cluster-i7" # Hostname or IP
+    path: "/mnt/shared_nfs_storage/minio" # Make sure this path exists first (in server)
+
+---
+
+apiVersion: "v1"
+kind: "PersistentVolumeClaim"
+metadata:
+  namespace: "minio"
+  name: "minio-volume-claim"
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  storageClassName: "minio-nfs"
+  resources:
+    requests:
+      storage: "100Gi"

@@ -9,7 +9,7 @@ spec:
   capacity:
     storage: "5Gi"
   accessModes:
-    - "ReadWriteMany"
+    - "ReadWriteOnce"
   nfs:
     server: "k8s-cluster-i7" # Hostname or IP
     path: "/mnt/shared_nfs_storage/etcd" # Make sure this path exists first (in server)
@@ -22,7 +22,7 @@ metadata:
   name: "etcd-volume-claim"
 spec:
   accessModes:
-    - "ReadWriteMany"
+    - "ReadWriteOnce"
   storageClassName: "etcd-nfs"
   resources:
     requests:

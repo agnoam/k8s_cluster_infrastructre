@@ -20,16 +20,10 @@ spec:
         - name: "etcd-storage"
           persistentVolumeClaim:
             claimName: "etcd-volume-claim"
-      
-      # securityContext:
-      #   fsGroup: 1000
 
       containers:
         - name: "etcd"
           image: "bitnami/etcd"
-          
-          # securityContext:
-          #   privileged: true
 
           env:
             - name: ALLOW_NONE_AUTHENTICATION

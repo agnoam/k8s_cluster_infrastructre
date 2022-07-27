@@ -5,7 +5,8 @@ This repository contains:
 * Elasticsearch
 * Kibana
 * Elastic APM
-* Fake-s3 (s3 mock server)
+* Minio (S3 compatible Object Storage)
+* ~~Fake-s3 (s3 mock server)~~
 * RabbitMQ
 * Redis
 * Private Registry (docker-registry)

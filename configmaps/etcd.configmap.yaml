@@ -6,7 +6,7 @@ metadata:
 data:
   allow-none-authentication: yes
   etcd-enable-v2: true
-  etcd-name: feature_toggle_etcd
+  # etcd-name: feature_toggle_etcd
   etcd-listen-client-urls: http://0.0.0.0:2379
   etcd-listen-peer-urls: http://0.0.0.0:2380
   etcd-advertise-client-urls: http://0.0.0.0:2380

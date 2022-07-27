@@ -1,0 +1,85 @@
+# Dependencies:
+# secret
+# volume
+
+apiVersion: "apps/v1"
+kind: "Deployment"
+
+metadata:
+  name: "minio"
+
+spec:
+  selector:
+    matchLabels:
+      app: "minio"
+
+  template:
+    metadata:
+      namespace: "minio"
+      labels:
+        app: "minio"
+        
+    spec:
+      volumes:
+        - name: "minio-storage"
+          persistentVolumeClaim:
+            claimName: "minio-volume-claim"
+
+      containers:
+        - name: "minio"
+          image: "quay.io/minio/minio"
+          
+          ports:
+            - containerPort: 9000
+            - containerPort: 9001
+            
+          env:
+            - name: "MINIO_ROOT_USER"
+              valueFrom:
+                secretKeyRef:
+                  name: "minio-secrets"
+                  key: "root_user"
+
+            - name: "MINIO_ROOT_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: "minio-secrets"
+                  key: "root_password"
+
+          command: ["minio"]
+          args: ["server", "/data", "--console-address", ":9001"]
+
+          volumeMounts:
+            - mountPath: "/data"
+              name: "minio-storage"
+
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "500m"
+---
+
+apiVersion: "v1"
+kind: "Service"
+
+metadata:
+  name: "minio"
+
+spec:
+  selector:
+    app: "minio"
+  
+  ports:
+    - protocol: "TCP"
+      name: "access-port"
+      port: 9000
+      targetPort: 9000
+      nodePort: 30040
+    
+    - protocol: "TCP"
+      name: "second-port"
+      port: 9001
+      targetPort: 9001
+      nodePort: 30041
+      
+  type: "NodePort"
