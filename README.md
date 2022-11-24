@@ -23,6 +23,9 @@ This repository contains:
 # New-Node
 1. Set static-ip to the new node
 2. For enable the cluster to connect to nfs please `sudo apt-get install -y nfs-common`
+3. Enable ssh **(optional)**
+
+In case there is a private registry built in the cluster make sure you have copied the certificate file and installed it
 
 # In all computers
 1. Run this `microk8s kubectl get nodes -o wide | awk '{ print $6 " " $1 }' | tail -n +2 | grep -v $(hostname)`
@@ -65,7 +68,7 @@ If the folder exists make sure you changed the ownership to - `nobody: nogroup`,
 and the folder permissions to - `777`
 
 ## Self-Singed certified regsitry errors
-Create a ssl certificate, it will create two files: `.crt` file and `.key`. You can use [Docker docs](https://docs.docker.com/registry/insecure/#use-self-signed-certificates)
+Create a ssl certificate, it will create two files: `.crt` file and `.key`. You can use [Docker docs]https://docs.docker.com/registry/insecure/#use-self-signed-certificates)
 
 1. Place them both in the volume of the Pod `/certs/domain.crt` and `/certs/domain.key`
 2. Add the path of them to the environment variables of the Pod
